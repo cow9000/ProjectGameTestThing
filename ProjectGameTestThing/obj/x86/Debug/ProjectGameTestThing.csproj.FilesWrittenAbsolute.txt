@@ -33,3 +33,4 @@
 /Users/dvaw7563/Projects/ProjectGameTestThing/ProjectGameTestThing/obj/x86/Debug/ProjectGameTestThing.exe
 /Users/dvaw7563/Projects/ProjectGameTestThing/ProjectGameTestThing/obj/x86/Debug/ProjectGameTestThing.exe.mdb
 /Users/dvaw7563/Projects/ProjectGameTestThing/ProjectGameTestThing/bin/Debug/MonoGame.Framework.dll
+/Users/dvaw7563/Projects/ProjectGameTestThing/ProjectGameTestThing/bin/Debug/Content/Font/gameFont.xnb

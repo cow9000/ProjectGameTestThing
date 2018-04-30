@@ -31,7 +31,10 @@ namespace ProjectGameTestThing
 	public class Game1 : Game
 	{
 
-	 
+		//Number that holds the player score
+		private int score;
+		// The font used to display UI elements
+		private SpriteFont font;
 
 		// The sound that is played when a laser is fired
 		private SoundEffect laserSound;
@@ -108,6 +111,8 @@ namespace ProjectGameTestThing
 		protected override void Initialize()
 		{
 			// TODO: Add your initialization logic here
+			//Set player's score to zero
+score = 0;
 
 			// Initialize the player class
 			player = new Player();
@@ -208,6 +213,9 @@ namespace ProjectGameTestThing
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
+
+			font = Content.Load<SpriteFont>("Font/gameFont");
+
 			// Load the music
 			gameplayMusic = Content.Load<Song>("Sound/gameMusic");
 
@@ -333,6 +341,8 @@ namespace ProjectGameTestThing
 
 				if (enemies[i].Active == false)
 				{
+					//Add to the player's score
+					score += enemies[i].ScoreValue;
 					enemies.RemoveAt(i);
 				}
 			}
@@ -406,6 +416,12 @@ namespace ProjectGameTestThing
 			// Start drawing 
 			spriteBatch.Begin(); 
 
+			// Draw the score
+			spriteBatch.DrawString(font, "score: " + score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+			// Draw the player health
+			spriteBatch.DrawString(font, "health: " + player.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.White);
+
+
 
 
 
@@ -459,6 +475,12 @@ namespace ProjectGameTestThing
 		private void UpdatePlayer(GameTime gameTime)
 		{
 			player.Update(gameTime);
+			// reset score if player health goes to zero
+			if (player.Health <= 0)
+			{
+			    player.Health = 100;
+			    score = 0;
+			}
 
 
 

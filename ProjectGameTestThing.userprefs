@@ -1,7 +1,7 @@
 ﻿<Properties StartupConfiguration="{E765670F-0BE3-4320-AE51-F3D058B5A6FA}|Default">
   <MonoDevelop.Ide.Workbench ActiveDocument="ProjectGameTestThing/Game1.cs">
     <Files>
-      <File FileName="ProjectGameTestThing/Game1.cs" Line="210" Column="50" />
+      <File FileName="ProjectGameTestThing/Game1.cs" Line="211" Column="9" />
       <File FileName="ProjectGameTestThing/Model/Player.cs" Line="43" Column="4" />
       <File FileName="ProjectGameTestThing/View/Animation.cs" Line="134" Column="51" />
       <File FileName="ProjectGameTestThing/View/ParallaxingBackground.cs" Line="16" Column="3" />
