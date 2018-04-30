@@ -6,6 +6,9 @@ using ProjectGameTestThing.Model;
 // Link the View namespace
 using ProjectGameTestThing.View;
 
+using System.Collections.Generic;
+
+
 
 
 
@@ -28,8 +31,29 @@ namespace ProjectGameTestThing
 	/// 
 	public class Game1 : Game
 	{
+
+		// Enemies
+		private Texture2D enemyTexture;
+		private List<Enemy> enemies;
+
+		// The rate at which the enemies appear
+		private TimeSpan enemySpawnTime;
+		private TimeSpan previousSpawnTime;
+
+		// A random number generator
+		private Random random;
+
+
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
+
+		// Image used to display the static background
+		private Texture2D mainBackground;
+
+		// Parallaxing Layers
+		private ParallaxingBackground bgLayer1;
+		private ParallaxingBackground bgLayer2;
+
 
 		// Represents the player 
 		private Player player;
@@ -68,9 +92,62 @@ namespace ProjectGameTestThing
 			// Set a constant player move speed
 			playerMoveSpeed = 8.0f;
 
+
+			bgLayer1 = new ParallaxingBackground();
+			bgLayer2 = new ParallaxingBackground();
+
+			// Initialize the enemies list
+			enemies = new List<Enemy>();
+
+			// Set the time keepers to zero
+			previousSpawnTime = TimeSpan.Zero;
+
+			// Used to determine how fast enemy respawns
+			enemySpawnTime = TimeSpan.FromSeconds(1.0f);
+
+			// Initialize our random number generator
+			random = new Random();
+
+
 			base.Initialize();
 
 
+		}
+
+
+		private void UpdateCollision()
+		{
+			// Use the Rectangle's built-in intersect function to 
+			// determine if two objects are overlapping
+			Rectangle rectangle1;
+			Rectangle rectangle2;
+
+			// Only create the rectangle once for the player
+			rectangle1 = new Rectangle((int)player.Position.X, (int)player.Position.Y, player.Width, player.Height);
+
+			// Do the collision between the player and the enemies
+			for (int i = 0; i < enemies.Count; i++)
+			{
+				rectangle2 = new Rectangle((int)enemies[i].Position.X, (int)enemies[i].Position.Y, enemies[i].Width, enemies[i].Height);
+
+				// Determine if the two objects collided with each other
+				if (rectangle1.Intersects(rectangle2))
+				{
+					// Subtract the health from the player based on
+					// the enemy damage
+					player.Health -= enemies[i].Damage;
+
+					// Since the enemy collided with the player
+					// destroy it
+					enemies[i].Health = 0;
+
+					// If the player health is less than zero we died
+					if (player.Health <= 0)
+					{
+						player.Active = false;
+					}
+				}
+		 }
 		}
 
 		/// <summary>
@@ -92,7 +169,65 @@ namespace ProjectGameTestThing
 			Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
 			player.Initialize(playerAnimation, playerPosition);
 
+			// Load the parallaxing background
+			bgLayer1.Initialize(Content, "Texture/bgLayer1", GraphicsDevice.Viewport.Width, -1);
+			bgLayer2.Initialize(Content, "Texture/bgLayer2", GraphicsDevice.Viewport.Width, -2);
+
+			mainBackground = Content.Load<Texture2D>("Texture/mainbackground");
+
+			enemyTexture = Content.Load<Texture2D>("Animation/mineAnimation");
+
+
+
 		}
+
+
+		private void AddEnemy()
+		{
+			// Create the animation object
+			Animation enemyAnimation = new Animation();
+
+			// Initialize the animation with the correct animation information
+			enemyAnimation.Initialize(enemyTexture, Vector2.Zero, 47, 61, 8, 30, Color.White, 1f, true);
+
+			// Randomly generate the position of the enemy
+			Vector2 position = new Vector2(GraphicsDevice.Viewport.Width + enemyTexture.Width / 2, random.Next(100, GraphicsDevice.Viewport.Height - 100));
+
+			// Create an enemy
+			Enemy enemy = new Enemy();
+
+			// Initialize the enemy
+			enemy.Initialize(enemyAnimation, position);
+
+			// Add the enemy to the active enemies list
+			enemies.Add(enemy);
+		}
+
+
+		private void UpdateEnemies(GameTime gameTime)
+		{
+			// Spawn a new enemy enemy every 1.5 seconds
+			if (gameTime.TotalGameTime - previousSpawnTime > enemySpawnTime)
+			{
+				previousSpawnTime = gameTime.TotalGameTime;
+
+				// Add an Enemy
+				AddEnemy();
+			}
+
+			// Update the Enemies
+			for (int i = enemies.Count - 1; i >= 0; i--)
+			{
+				enemies[i].Update(gameTime);
+
+				if (enemies[i].Active == false)
+				{
+					enemies.RemoveAt(i);
+				}
+			}
+		}
+
+
 
 		/// <summary>
 		/// Allows the game to run logic such as updating the world,
@@ -122,6 +257,18 @@ namespace ProjectGameTestThing
 			//Update the player
 			UpdatePlayer(gameTime);
 
+			// Update the parallaxing background
+			bgLayer1.Update();
+			bgLayer2.Update();
+
+
+			// Update the enemies
+			UpdateEnemies(gameTime);
+
+
+			// Update the collision
+			UpdateCollision();
+
 			// TODO: Add your update logic here
 
 			base.Update(gameTime);
@@ -139,8 +286,26 @@ namespace ProjectGameTestThing
 
 			base.Draw(gameTime);
 
+
+
 			// Start drawing 
 			spriteBatch.Begin(); 
+
+
+
+
+			spriteBatch.Draw(mainBackground, Vector2.Zero, Color.White);
+			// Draw the moving background
+			bgLayer1.Draw(spriteBatch);
+			bgLayer2.Draw(spriteBatch);
+
+
+			// Draw the Enemies
+			for (int i = 0; i<enemies.Count; i++)
+			{
+			enemies[i].Draw(spriteBatch);
+			}
+
 			// Draw the Player 
 			player.Draw(spriteBatch); 
 			// Stop drawing 
@@ -153,6 +318,8 @@ namespace ProjectGameTestThing
 		private void UpdatePlayer(GameTime gameTime)
 		{
 			player.Update(gameTime);
+
+
 			// Get Thumbstick Controls
 			player.Position.X += currentGamePadState.ThumbSticks.Left.X * playerMoveSpeed;
 			player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * playerMoveSpeed;
