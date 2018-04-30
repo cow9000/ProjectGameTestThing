@@ -1,11 +1,12 @@
 ﻿<Properties StartupConfiguration="{E765670F-0BE3-4320-AE51-F3D058B5A6FA}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="ProjectGameTestThing/Model/Enemy.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ProjectGameTestThing/Model/Projectile.cs">
     <Files>
-      <File FileName="ProjectGameTestThing/Game1.cs" Line="112" Column="44" />
+      <File FileName="ProjectGameTestThing/Game1.cs" Line="145" Column="29" />
       <File FileName="ProjectGameTestThing/Model/Player.cs" Line="43" Column="4" />
       <File FileName="ProjectGameTestThing/View/Animation.cs" Line="134" Column="51" />
       <File FileName="ProjectGameTestThing/View/ParallaxingBackground.cs" Line="16" Column="3" />
-      <File FileName="ProjectGameTestThing/Model/Enemy.cs" Line="4" Column="1" />
+      <File FileName="ProjectGameTestThing/Model/Enemy.cs" Line="3" Column="33" />
+      <File FileName="ProjectGameTestThing/Model/Projectile.cs" Line="6" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
