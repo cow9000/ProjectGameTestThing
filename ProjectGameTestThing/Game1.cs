@@ -8,6 +8,8 @@ using ProjectGameTestThing.View;
 
 using System.Collections.Generic;
 
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 
 
@@ -31,6 +33,20 @@ namespace ProjectGameTestThing
 	/// 
 	public class Game1 : Game
 	{
+
+		// The sound that is played when a laser is fired
+		private SoundEffect laserSound;
+
+		// The sound used when the player or an enemy dies
+		private SoundEffect explosionSound;
+
+		// The music played during gameplay
+		private Song gameplayMusic;
+
+
+		private Texture2D explosionTexture;
+		private List<Animation> explosions;
+
 
 		private Texture2D projectileTexture;
 		private List<Projectile> projectiles;
@@ -120,6 +136,8 @@ namespace ProjectGameTestThing
 
 			// Set the laser to fire every quarter second
 			fireTime = TimeSpan.FromSeconds(.15f);
+
+			explosions = new List<Animation>();
 
 			base.Initialize();
 
@@ -211,6 +229,18 @@ namespace ProjectGameTestThing
 			enemyTexture = Content.Load<Texture2D>("Animation/mineAnimation");
 
 			projectileTexture = Content.Load<Texture2D>("Texture/laser");
+			explosionTexture = Content.Load<Texture2D>("Animation/explosion");
+
+
+			// Load the music
+			gameplayMusic = Content.Load<Song>("Sound/gameMusic");
+
+			// Load the laser and explosion sound effect
+			laserSound = Content.Load<SoundEffect>("Sound/laserFire");
+			explosionSound = Content.Load<SoundEffect>("Sound/explosion");
+
+			// Start the music right away
+			PlayMusic(gameplayMusic);
 
 
 		}
@@ -222,6 +252,22 @@ namespace ProjectGameTestThing
 			projectile.Initialize(GraphicsDevice.Viewport, projectileTexture, position);
 			projectiles.Add(projectile);
 		}
+
+		private void PlayMusic(Song song)
+		{
+			// Due to the way the MediaPlayer plays music,
+			// we have to catch the exception. Music will play when the game is not tethered
+			try
+			{
+				// Play the music
+				MediaPlayer.Play(song);
+
+				// Loop the currently playing song
+				MediaPlayer.IsRepeating = true;
+			}
+			catch { } //No Exception is handled so it is an empty/anonymous exception
+		}
+
 
 
 		private void AddEnemy()
@@ -246,6 +292,24 @@ namespace ProjectGameTestThing
 		}
 
 
+			private void AddExplosion(Vector2 position)
+			{
+				Animation explosion = new Animation();
+				explosion.Initialize(explosionTexture, position, 134, 134, 12, 45, Color.White, 1f, false);
+				explosions.Add(explosion);
+			}
+		private void UpdateExplosions(GameTime gameTime)
+		{
+			for (int i = explosions.Count - 1; i >= 0; i--)
+			{
+				explosions[i].Update(gameTime);
+				if (explosions[i].Active == false)
+				{
+					explosions.RemoveAt(i);
+				}
+			}
+		}
+
 		private void UpdateEnemies(GameTime gameTime)
 		{
 			// Spawn a new enemy enemy every 1.5 seconds
@@ -261,6 +325,16 @@ namespace ProjectGameTestThing
 			for (int i = enemies.Count - 1; i >= 0; i--)
 			{
 				enemies[i].Update(gameTime);
+
+				// If not active and health <= 0
+				if (enemies[i].Health <= 0)
+				{
+					// Play the explosion sound
+					explosionSound.Play();
+					// Add an explosion
+					AddExplosion(enemies[i].Position);
+				}
+
 
 				if (enemies[i].Active == false)
 				{
@@ -313,7 +387,8 @@ namespace ProjectGameTestThing
 
 			// Update the projectiles
 			UpdateProjectiles();
-
+			// Update the explosions
+			UpdateExplosions(gameTime);
 			// TODO: Add your update logic here
 
 			base.Update(gameTime);
@@ -357,6 +432,12 @@ namespace ProjectGameTestThing
 			{
 			    projectiles[i].Draw(spriteBatch);
 			}
+
+			// Draw the explosions
+			for (int i = 0; i<explosions.Count; i++)
+			{
+			    explosions[i].Draw(spriteBatch);
+			}
 			// Draw the Player 
 			player.Draw(spriteBatch); 
 			// Stop drawing 
@@ -389,6 +470,9 @@ namespace ProjectGameTestThing
 			// Fire only every interval we set as the fireTime
 			if (gameTime.TotalGameTime - previousFireTime > fireTime)
 			{
+
+				// Play the laser sound
+				laserSound.Play();
 			    // Reset our current time
 			    previousFireTime = gameTime.TotalGameTime;
 
