@@ -1,18 +1,33 @@
 ﻿using System;
 
+// Reference for all Model objects
+using ProjectGameTestThing.Model;
+
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace ProjectGameTestThing
 {
+
+
+
+
 	/// <summary>
 	/// This is the main type for your game.
 	/// </summary>
+	/// 
+	/// 
+	/// 
+	/// 
 	public class Game1 : Game
 	{
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
+
+		// Represents the player 
+		private Player player;
 
 		public Game1()
 		{
@@ -30,7 +45,12 @@ namespace ProjectGameTestThing
 		{
 			// TODO: Add your initialization logic here
 
+			// Initialize the player class
+			player = new Player();
+
 			base.Initialize();
+
+
 		}
 
 		/// <summary>
@@ -43,6 +63,11 @@ namespace ProjectGameTestThing
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			//TODO: use this.Content to load your game content here 
+
+			// Load the player resources 
+			Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+
+			player.Initialize(Content.Load<Texture2D>("Texture/player"), playerPosition);
 		}
 
 		/// <summary>
@@ -75,6 +100,15 @@ namespace ProjectGameTestThing
 			//TODO: Add your drawing code here
 
 			base.Draw(gameTime);
+
+			// Start drawing 
+			spriteBatch.Begin(); 
+			// Draw the Player 
+			player.Draw(spriteBatch); 
+			// Stop drawing 
+			spriteBatch.End();
+
+
 		}
 	}
 }
