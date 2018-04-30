@@ -11,9 +11,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 
-
-
-
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -33,6 +30,8 @@ namespace ProjectGameTestThing
 	/// 
 	public class Game1 : Game
 	{
+
+	 
 
 		// The sound that is played when a laser is fired
 		private SoundEffect laserSound;
@@ -209,8 +208,12 @@ namespace ProjectGameTestThing
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
+			// Load the music
+			gameplayMusic = Content.Load<Song>("Sound/gameMusic");
 
-			//TODO: use this.Content to load your game content here 
+			// Load the laser and explosion sound effect
+			laserSound = Content.Load<SoundEffect>("Sound/laserFire");
+			explosionSound = Content.Load<SoundEffect>("Sound/explosion");
 
 			// Load the player resources
 			Animation playerAnimation = new Animation();
@@ -230,14 +233,6 @@ namespace ProjectGameTestThing
 
 			projectileTexture = Content.Load<Texture2D>("Texture/laser");
 			explosionTexture = Content.Load<Texture2D>("Animation/explosion");
-
-
-			// Load the music
-			gameplayMusic = Content.Load<Song>("Sound/gameMusic");
-
-			// Load the laser and explosion sound effect
-			laserSound = Content.Load<SoundEffect>("Sound/laserFire");
-			explosionSound = Content.Load<SoundEffect>("Sound/explosion");
 
 			// Start the music right away
 			PlayMusic(gameplayMusic);
